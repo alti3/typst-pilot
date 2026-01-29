@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { CompileFormatEnum } from '@myriaddreamin/typst.ts/compiler';
 import { CompilationResult } from '@/types/editor';
 
 export function useTypstCompiler() {
@@ -41,7 +42,7 @@ export function useTypstCompiler() {
       // Compile to PDF
       const pdfResult = await compilerRef.current.compile({
         mainFilePath: '/main.typ',
-        format: 'pdf',
+        format: CompileFormatEnum.pdf,
       });
       
       if (!pdfResult.result) {
