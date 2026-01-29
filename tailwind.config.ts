@@ -57,6 +57,29 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        editor: {
+          DEFAULT: "hsl(var(--editor-background))",
+          foreground: "hsl(var(--editor-foreground))",
+          "line-number": "hsl(var(--editor-line-number))",
+          selection: "hsl(var(--editor-selection))",
+          "current-line": "hsl(var(--editor-current-line))",
+        },
+        panel: {
+          DEFAULT: "hsl(var(--panel-background))",
+          border: "hsl(var(--panel-border))",
+        },
+        chat: {
+          user: "hsl(var(--chat-user-bg))",
+          assistant: "hsl(var(--chat-assistant-bg))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
