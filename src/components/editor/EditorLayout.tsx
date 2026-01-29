@@ -86,7 +86,7 @@ export function EditorLayout() {
       <div
         className={cn(
           'h-full border-r border-panel-border transition-all duration-200',
-          sidebarOpen ? 'w-[20%] min-w-[200px]' : 'w-0'
+          sidebarOpen ? 'w-[14%] min-w-[200px]' : 'w-0'
         )}
       >
         {sidebarOpen && (
@@ -170,7 +170,7 @@ export function EditorLayout() {
       </div>
 
       {/* PDF Preview Panel */}
-      <div className="w-[40%] h-full border-l border-panel-border">
+      <div className="w-[43%] h-full border-l border-panel-border">
         <PDFPreview
           pdfUrl={pdfUrl}
           isCompiling={isCompiling}
