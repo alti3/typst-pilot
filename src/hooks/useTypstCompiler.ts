@@ -21,13 +21,18 @@ export function useTypstCompiler() {
     setIsCompiling(true);
     
     try {
-      // Dynamic import of typst.ts compiler
-      const { createTypstCompiler } = await import('@myriaddreamin/typst.ts');
-      
       // Initialize compiler if not already done
       if (!compilerRef.current) {
+        // Dynamic import keeps the compiler/wasm chunk lazy-loaded.
+        const [{ createTypstCompiler }, { default: compilerWasmUrl }] = await Promise.all([
+          import('@myriaddreamin/typst.ts/compiler'),
+          import('@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url'),
+        ]);
         compilerRef.current = createTypstCompiler();
-        await compilerRef.current.init();
+        await compilerRef.current.init({
+          beforeBuild: [],
+          getModule: () => compilerWasmUrl,
+        });
       }
       
       // Add the main file content
