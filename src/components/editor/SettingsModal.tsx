@@ -28,6 +28,38 @@ interface SettingsModalProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+import { useState } from 'react';
+import { Settings, Key, Check, AlertCircle, ShieldCheck, Cpu } from 'lucide-react';
+import { AISettings, LLM_PROVIDERS } from '@/types/editor';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+
+interface SettingsModalProps {
+  settings: AISettings;
+  onUpdateSettings: (updates: Partial<AISettings>) => void;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
 export function SettingsModal({
   settings,
   onUpdateSettings,
@@ -131,83 +163,98 @@ export function SettingsModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            AI Settings
-          </DialogTitle>
-          <DialogDescription>
-            Configure your LLM provider and API key for AI-powered editing.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-2xl border-border shadow-2xl">
+        <div className="bg-primary/5 p-6 pb-4">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Settings className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl">AI Configuration</DialogTitle>
+                <DialogDescription className="text-sm">
+                  Connect your favorite LLM provider.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+        </div>
 
-        <div className="space-y-4 py-4">
-          {/* Provider Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="provider">Provider</Label>
-            <Select
-              value={settings.provider}
-              onValueChange={(v) => handleProviderChange(v as AISettings['provider'])}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(LLM_PROVIDERS).map(([key, val]) => (
-                  <SelectItem key={key} value={key}>
-                    {val.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Model Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="model">Model</Label>
-            {settings.provider === 'custom' ? (
-              <Input
-                id="model"
-                value={settings.model}
-                onChange={(e) => onUpdateSettings({ model: e.target.value })}
-                placeholder="Enter model name"
-              />
-            ) : (
+        <div className="p-6 pt-2 space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Provider Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="provider" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Provider</Label>
               <Select
-                value={settings.model}
-                onValueChange={(v) => onUpdateSettings({ model: v })}
+                value={settings.provider}
+                onValueChange={(v) => handleProviderChange(v as AISettings['provider'])}
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-xl bg-muted/30 border-border/50">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {models.map((model) => (
-                    <SelectItem key={model} value={model}>
-                      {model}
+                <SelectContent className="rounded-xl">
+                  {Object.entries(LLM_PROVIDERS).map(([key, val]) => (
+                    <SelectItem key={key} value={key}>
+                      {val.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}
+            </div>
+
+            {/* Model Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="model" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Model</Label>
+              {settings.provider === 'custom' ? (
+                <div className="relative">
+                  <Cpu className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="model"
+                    value={settings.model}
+                    onChange={(e) => onUpdateSettings({ model: e.target.value })}
+                    placeholder="e.g. gpt-4"
+                    className="pl-9 rounded-xl bg-muted/30 border-border/50"
+                  />
+                </div>
+              ) : (
+                <Select
+                  value={settings.model}
+                  onValueChange={(v) => onUpdateSettings({ model: v })}
+                >
+                  <SelectTrigger className="rounded-xl bg-muted/30 border-border/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    {models.map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           </div>
 
           {/* Custom Base URL */}
           {settings.provider === 'custom' && (
-            <div className="space-y-2">
-              <Label htmlFor="baseUrl">Base URL</Label>
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+              <Label htmlFor="baseUrl" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Base URL</Label>
               <Input
                 id="baseUrl"
                 value={settings.baseUrl || ''}
                 onChange={(e) => onUpdateSettings({ baseUrl: e.target.value })}
                 placeholder="https://api.example.com/v1"
+                className="rounded-xl bg-muted/30 border-border/50"
               />
             </div>
           )}
 
+          <Separator className="bg-border/50" />
+
           {/* API Key */}
           <div className="space-y-2">
-            <Label htmlFor="apiKey">API Key</Label>
+            <Label htmlFor="apiKey" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">API Key</Label>
             <div className="relative">
               <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -216,38 +263,57 @@ export function SettingsModal({
                 value={settings.apiKey}
                 onChange={(e) => onUpdateSettings({ apiKey: e.target.value })}
                 placeholder="Enter your API key"
-                className="pl-9"
+                className="pl-9 rounded-xl bg-muted/30 border-border/50 focus:ring-primary/20"
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              Your API key is stored locally and never sent to our servers.
-            </p>
+            <div className="flex items-center gap-2 px-1">
+              <ShieldCheck className="h-3 w-3 text-success" />
+              <p className="text-[10px] text-muted-foreground">
+                Your key is stored locally and never sent to our servers.
+              </p>
+            </div>
           </div>
 
-          {/* Test Connection */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-4 pt-2">
             <Button
               onClick={testConnection}
               variant="outline"
               disabled={testStatus === 'testing'}
+              className="rounded-xl gap-2 flex-1"
             >
-              {testStatus === 'testing' ? 'Testing...' : 'Test Connection'}
+              {testStatus === 'testing' ? (
+                <>
+                  <span className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  Testing...
+                </>
+              ) : (
+                'Test Connection'
+              )}
             </Button>
+            
             {testStatus === 'success' && (
-              <span className="flex items-center gap-1 text-sm text-success">
-                <Check className="h-4 w-4" />
+              <div className="flex items-center gap-1.5 text-xs font-medium text-success animate-in fade-in slide-in-from-right-2">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 Connected
-              </span>
+              </div>
             )}
+            
             {testStatus === 'error' && (
-              <span className="flex items-center gap-1 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4" />
-                {testError}
-              </span>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-destructive animate-in fade-in slide-in-from-right-2 max-w-[150px] truncate">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                {testError || 'Failed'}
+              </div>
             )}
           </div>
         </div>
+
+        <DialogFooter className="bg-muted/30 p-4 border-t border-border/50">
+          <Button onClick={() => onOpenChange?.(false)} className="rounded-xl px-8 shadow-sm">
+            Save Settings
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

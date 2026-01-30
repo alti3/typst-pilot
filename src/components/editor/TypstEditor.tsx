@@ -9,12 +9,45 @@ interface TypstEditorProps {
 
 // Typst language definition
 const TYPST_LANGUAGE_ID = 'typst';
+const THEME_NAME = 'typst-canvas-dark';
 
 function registerTypstLanguage(monaco: Monaco) {
   // Check if already registered
   if (monaco.languages.getLanguages().some((lang) => lang.id === TYPST_LANGUAGE_ID)) {
     return;
   }
+
+  // Define custom theme
+  monaco.editor.defineTheme(THEME_NAME, {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword', foreground: '569cd6' },
+      { token: 'function', foreground: 'dcdcaa' },
+      { token: 'string', foreground: 'ce9178' },
+      { token: 'number', foreground: 'b5cea8' },
+      { token: 'comment', foreground: '6a9955', fontStyle: 'italic' },
+      { token: 'keyword.heading', foreground: 'e06c75', fontStyle: 'bold' },
+      { token: 'tag', foreground: 'c678dd' },
+      { token: 'variable.reference', foreground: '61afef' },
+      { token: 'string.math', foreground: '98c379' },
+      { token: 'string.raw', foreground: 'd19a66' },
+    ],
+    colors: {
+      'editor.background': '#09090b', // Zinc 950
+      'editor.foreground': '#fafafa', // Zinc 50
+      'editorLineNumber.foreground': '#3f3f46', // Zinc 700
+      'editorLineNumber.activeForeground': '#a1a1aa', // Zinc 400
+      'editor.lineHighlightBackground': '#18181b', // Zinc 900
+      'editor.selectionBackground': '#27272a', // Zinc 800
+      'editor.inactiveSelectionBackground': '#18181b',
+      'editorCursor.foreground': '#fafafa',
+      'editorWhitespace.foreground': '#27272a',
+      'editorBracketHighlight.foreground1': '#c678dd',
+      'editorBracketHighlight.foreground2': '#61afef',
+      'editorBracketHighlight.foreground3': '#98c379',
+    }
+  });
 
   // Register language
   monaco.languages.register({ id: TYPST_LANGUAGE_ID, extensions: ['.typ'] });
@@ -187,7 +220,7 @@ export function TypstEditor({ content, onChange }: TypstEditorProps) {
       value={content}
       onChange={handleChange}
       onMount={handleEditorMount}
-      theme="vs-dark"
+      theme={THEME_NAME}
       options={{
         fontSize: 14,
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, 'Courier New', monospace",
