@@ -1,30 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Trash2, Loader2, Sparkles, Copy, Check } from 'lucide-react';
-import { ChatMessage } from '@/types/editor';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-
-interface AIChatPanelProps {
-  messages: ChatMessage[];
-  isLoading: boolean;
-  error: string | null;
-  onSendMessage: (message: string) => void;
-  onClearMessages: () => void;
-  onApplyCode?: (code: string) => void;
-  isConfigured: boolean;
-  onOpenSettings: () => void;
-}
-
-import { useState, useRef, useEffect } from 'react';
 import { Send, Trash2, Loader2, Sparkles, Copy, Check, Bot, User, Wand2 } from 'lucide-react';
 import { ChatMessage } from '@/types/editor';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  PromptInput,
+  PromptInputBody,
+  PromptInputTextarea,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputActionMenu,
+  PromptInputActionMenuTrigger,
+  PromptInputActionMenuContent,
+  PromptInputActionAddAttachments,
+} from '@/components/ai-elements/prompt-input';
 
 interface AIChatPanelProps {
   messages: ChatMessage[];
@@ -50,7 +41,6 @@ export function AIChatPanel({
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -62,17 +52,10 @@ export function AIChatPanel({
     }
   }, [messages, isLoading]);
 
-  const handleSubmit = () => {
-    if (input.trim() && !isLoading) {
-      onSendMessage(input.trim());
+  const handleSubmit = (text: string) => {
+    if (text.trim() && !isLoading) {
+      onSendMessage(text.trim());
       setInput('');
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
     }
   };
 
@@ -233,30 +216,32 @@ export function AIChatPanel({
 
       {/* Input */}
       <div className="p-4 pt-2">
-        <div className="relative group bg-muted/50 rounded-2xl border border-border focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-          <Textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask AI to help with your Typst doc..."
-            className="min-h-[50px] max-h-[150px] resize-none border-none focus-visible:ring-0 bg-transparent py-3 pr-12 text-sm placeholder:text-muted-foreground/50"
-            disabled={isLoading}
-          />
-          <div className="absolute right-2 bottom-2">
-            <Button
-              onClick={handleSubmit}
+        <PromptInput
+          onSubmit={({ text }) => handleSubmit(text)}
+          className="bg-muted/50 rounded-2xl border border-border focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all"
+        >
+          <PromptInputBody>
+            <PromptInputTextarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask AI to help with your Typst doc..."
+              className="min-h-[50px] max-h-[150px] resize-none border-none focus-visible:ring-0 bg-transparent py-3 text-sm placeholder:text-muted-foreground/50"
+              disabled={isLoading}
+            />
+          </PromptInputBody>
+          <PromptInputFooter>
+            <PromptInputActionMenu>
+              <PromptInputActionMenuTrigger />
+              <PromptInputActionMenuContent>
+                <PromptInputActionAddAttachments />
+              </PromptInputActionMenuContent>
+            </PromptInputActionMenu>
+            <PromptInputSubmit
+              status={isLoading ? "submitted" : undefined}
               disabled={!input.trim() || isLoading}
-              size="icon"
-              className={cn(
-                "h-8 w-8 rounded-xl transition-all",
-                input.trim() ? "bg-primary text-primary-foreground shadow-md" : "bg-transparent text-muted-foreground"
-              )}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+            />
+          </PromptInputFooter>
+        </PromptInput>
         <p className="mt-2 text-[10px] text-center text-muted-foreground/50">
           AI can make mistakes. Verify important information.
         </p>

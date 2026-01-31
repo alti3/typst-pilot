@@ -135,34 +135,16 @@ export function PDFPreview({ pdfUrl, isCompiling, error, onCompile }: PDFPreview
             </div>
           </div>
         )}
-
-        {/* Success Indicator - Subtle floating badge when updated */}
-        {pdfUrl && !isCompiling && !error && (
-          <div className="absolute top-4 right-4 animate-out fade-out fill-mode-forwards delay-1000 duration-500">
-            <Badge className="bg-success/10 text-success border-success/20 pointer-events-none px-2 py-0.5 text-[10px]">
-              Updated
-            </Badge>
-          </div>
-        )}
       </div>
 
-      {/* Floating Action Button for mobile or quick access */}
-      <Button
-        onClick={onCompile}
-        disabled={isCompiling}
-        className={cn(
-          'absolute bottom-6 right-6 shadow-xl rounded-full h-12 w-12 p-0',
-          'bg-primary text-primary-foreground',
-          'transition-all duration-300 hover:scale-105 active:scale-95',
-          isCompiling && "opacity-80"
-        )}
-      >
-        {isCompiling ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          <Play className="h-5 w-5 fill-current" />
-        )}
-      </Button>
+      {/* Success Indicator - Subtle floating badge when updated */}
+      {pdfUrl && !isCompiling && !error && (
+        <div className="absolute top-4 right-4 animate-out fade-out fill-mode-forwards delay-1000 duration-500">
+          <Badge className="bg-success/10 text-success border-success/20 pointer-events-none px-2 py-0.5 text-[10px]">
+            Updated
+          </Badge>
+        </div>
+      )}
     </div>
   );
 }

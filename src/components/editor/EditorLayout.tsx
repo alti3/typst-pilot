@@ -110,7 +110,7 @@ export function EditorLayout() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">T</span>
             </div>
-            <h1 className="font-semibold tracking-tight hidden sm:block">Typst Canvas AI</h1>
+            <h1 className="font-semibold tracking-tight hidden sm:block">Typst Pilot</h1>
           </div>
           
           <Separator orientation="vertical" className="h-6" />
@@ -155,7 +155,7 @@ export function EditorLayout() {
           </Button>
           <Button onClick={handleCompile} disabled={isCompiling} size="sm" className="gap-2 shadow-sm">
             <Play className={cn("h-4 w-4", isCompiling && "animate-spin")} />
-            Run
+            Compile
           </Button>
           
           <Separator orientation="vertical" className="h-6 mx-1" />
