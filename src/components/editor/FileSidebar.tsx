@@ -1,30 +1,4 @@
 import { useState } from 'react';
-import { File, FilePlus, Trash2, Edit2, Check, X } from 'lucide-react';
-import { TypstFile } from '@/types/editor';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-
-interface FileSidebarProps {
-  files: TypstFile[];
-  activeFileId: string | null;
-  onSelectFile: (id: string) => void;
-  onCreateFile: (name: string) => void;
-  onDeleteFile: (id: string) => void;
-  onRenameFile: (id: string, newName: string) => void;
-}
-
-import { useState } from 'react';
 import { File, FilePlus, Trash2, Edit2, Check, X, FolderOpen } from 'lucide-react';
 import { TypstFile } from '@/types/editor';
 import { cn } from '@/lib/utils';
@@ -264,4 +238,3 @@ export function FileSidebar({
     </div>
   );
 }
-

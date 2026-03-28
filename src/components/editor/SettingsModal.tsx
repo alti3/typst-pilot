@@ -1,34 +1,4 @@
 import { useState } from 'react';
-import { Settings, Key, Check, AlertCircle } from 'lucide-react';
-import { AISettings, LLM_PROVIDERS } from '@/types/editor';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-interface SettingsModalProps {
-  settings: AISettings;
-  onUpdateSettings: (updates: Partial<AISettings>) => void;
-  trigger?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-}
-
-import { useState } from 'react';
 import { Settings, Key, Check, AlertCircle, ShieldCheck, Cpu } from 'lucide-react';
 import { AISettings, LLM_PROVIDERS } from '@/types/editor';
 import { Button } from '@/components/ui/button';
@@ -316,4 +286,3 @@ export function SettingsModal({
     </Dialog>
   );
 }
-

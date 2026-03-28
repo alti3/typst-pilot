@@ -1,18 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Settings, PanelLeftClose, PanelLeft } from 'lucide-react';
-import { FileSidebar } from './FileSidebar';
-import { TypstEditor } from './TypstEditor';
-import { PDFPreview } from './PDFPreview';
-import { AIChatPanel } from './AIChatPanel';
-import { SettingsModal } from './SettingsModal';
-import { useFileStore } from '@/hooks/useFileStore';
-import { useAISettings } from '@/hooks/useAISettings';
-import { useTypstCompiler } from '@/hooks/useTypstCompiler';
-import { useAIChat } from '@/hooks/useAIChat';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-import { useState, useCallback, useEffect, useRef } from 'react';
 import { Settings, PanelLeftClose, PanelLeft, Share2, Download, Play } from 'lucide-react';
 import { FileSidebar } from './FileSidebar';
 import { TypstEditor } from './TypstEditor';
@@ -250,4 +236,3 @@ export function EditorLayout() {
     </div>
   );
 }
-

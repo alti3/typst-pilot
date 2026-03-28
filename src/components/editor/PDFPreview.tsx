@@ -1,15 +1,3 @@
-import { useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Play, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-interface PDFPreviewProps {
-  pdfUrl: string | null;
-  isCompiling: boolean;
-  error?: string | null;
-  onCompile: () => void;
-}
-
 import { useRef } from 'react';
 import { Play, Loader2, AlertCircle, FileText, Download, Maximize2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -148,4 +136,3 @@ export function PDFPreview({ pdfUrl, isCompiling, error, onCompile }: PDFPreview
     </div>
   );
 }
-
