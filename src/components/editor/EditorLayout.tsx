@@ -192,9 +192,9 @@ export function EditorLayout() {
 
           {/* Main Content Area */}
           <ResizablePanel defaultSize={45} minSize={30}>
-            <ResizablePanelGroup direction="vertical">
+            <ResizablePanelGroup direction="vertical" className="min-h-0">
               {/* Editor Panel */}
-              <ResizablePanel defaultSize={75} minSize={40}>
+              <ResizablePanel defaultSize={75} minSize={40} className="min-h-0">
                 <div className="h-full flex flex-col bg-editor">
                   {activeFile ? (
                     <TypstEditor
@@ -216,7 +216,7 @@ export function EditorLayout() {
               <ResizableHandle withHandle />
               
               {/* AI Chat Panel */}
-              <ResizablePanel defaultSize={25} minSize={15}>
+              <ResizablePanel defaultSize={25} minSize={25} className="min-h-0">
                 <AIChatPanel
                   messages={messages}
                   isLoading={isChatLoading}

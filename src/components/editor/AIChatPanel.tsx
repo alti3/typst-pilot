@@ -89,7 +89,7 @@ export function AIChatPanel({
   }
 
   return (
-    <div className="h-full flex flex-col bg-background/50 border-t border-border">
+    <div className="h-full min-h-0 flex flex-col overflow-hidden bg-background/50 border-t border-border">
       {/* Header */}
       <div className="px-4 py-2 border-b border-border/50 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function AIChatPanel({
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1" ref={scrollRef}>
+      <ScrollArea className="min-h-0 flex-1" ref={scrollRef}>
         <div className="p-4 space-y-6">
           {messages.length === 0 ? (
             <div className="py-8 flex flex-col items-center justify-center text-center">
@@ -215,7 +215,7 @@ export function AIChatPanel({
       )}
 
       {/* Input */}
-      <div className="p-4 pt-2">
+      <div className="shrink-0 p-4 pt-2">
         <PromptInput
           onSubmit={({ text }) => handleSubmit(text)}
           className="bg-muted/50 rounded-2xl border border-border focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all"
@@ -225,7 +225,8 @@ export function AIChatPanel({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask AI to help with your Typst doc..."
-              className="min-h-[50px] max-h-[150px] resize-none border-none focus-visible:ring-0 bg-transparent py-3 text-sm placeholder:text-muted-foreground/50"
+              rows={1}
+              className="min-h-9 max-h-[116px] flex-none resize-none overflow-y-auto border-none bg-transparent py-2 text-sm leading-5 placeholder:text-muted-foreground/50 focus-visible:ring-0"
               disabled={isLoading}
             />
           </PromptInputBody>
@@ -249,4 +250,3 @@ export function AIChatPanel({
     </div>
   );
 }
-

@@ -60,6 +60,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -800,18 +801,56 @@ export const PromptInputBody = ({
 
 export type PromptInputTextareaProps = ComponentProps<
   typeof InputGroupTextarea
->;
+> & {
+  maxRows?: number;
+};
 
 export const PromptInputTextarea = ({
   onChange,
   onKeyDown,
   className,
+  maxRows = 5,
   placeholder = "What would you like to know?",
   ...props
 }: PromptInputTextareaProps) => {
   const controller = useOptionalPromptInputController();
   const attachments = usePromptInputAttachments();
   const [isComposing, setIsComposing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const resizeTextarea = useCallback(
+    (textarea: HTMLTextAreaElement) => {
+      textarea.style.height = "auto";
+
+      const styles = window.getComputedStyle(textarea);
+      const lineHeight = Number.parseFloat(styles.lineHeight);
+
+      if (!Number.isFinite(lineHeight)) {
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        return;
+      }
+
+      const verticalPadding =
+        Number.parseFloat(styles.paddingTop) +
+        Number.parseFloat(styles.paddingBottom);
+      const verticalBorder =
+        Number.parseFloat(styles.borderTopWidth) +
+        Number.parseFloat(styles.borderBottomWidth);
+      const maxHeight = lineHeight * maxRows + verticalPadding + verticalBorder;
+      const nextHeight = Math.min(textarea.scrollHeight, maxHeight);
+
+      textarea.style.height = `${nextHeight}px`;
+      textarea.style.overflowY =
+        textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+    },
+    [maxRows]
+  );
+
+  useLayoutEffect(() => {
+    if (textareaRef.current) {
+      resizeTextarea(textareaRef.current);
+    }
+  }, [props.value, controller?.textInput.value, resizeTextarea]);
 
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     // Call the external onKeyDown handler first
@@ -886,22 +925,27 @@ export const PromptInputTextarea = ({
         value: controller.textInput.value,
         onChange: (e: ChangeEvent<HTMLTextAreaElement>) => {
           controller.textInput.setInput(e.currentTarget.value);
+          resizeTextarea(e.currentTarget);
           onChange?.(e);
         },
       }
     : {
-        onChange,
+        onChange: (e: ChangeEvent<HTMLTextAreaElement>) => {
+          resizeTextarea(e.currentTarget);
+          onChange?.(e);
+        },
       };
 
   return (
     <InputGroupTextarea
-      className={cn("field-sizing-content max-h-48 min-h-16", className)}
+      className={cn("max-h-48 min-h-16 overflow-y-auto", className)}
       name="message"
       onCompositionEnd={() => setIsComposing(false)}
       onCompositionStart={() => setIsComposing(true)}
       onKeyDown={handleKeyDown}
       onPaste={handlePaste}
       placeholder={placeholder}
+      ref={textareaRef}
       {...props}
       {...controlledProps}
     />
