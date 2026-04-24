@@ -1,13 +1,22 @@
 export interface TypstFile {
   id: string;
   name: string;
+  path: string;
   content: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface TypstDirectory {
+  id: string;
+  path: string;
   createdAt: number;
   updatedAt: number;
 }
 
 export interface FileStore {
   files: TypstFile[];
+  directories: TypstDirectory[];
   activeFileId: string | null;
 }
 

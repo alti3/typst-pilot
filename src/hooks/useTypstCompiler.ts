@@ -1,12 +1,25 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { CompileFormatEnum } from '@myriaddreamin/typst.ts/compiler';
-import { CompilationResult } from '@/types/editor';
+import { CompilationResult, TypstFile } from '@/types/editor';
+
+type CompilerDiagnostic = {
+  message?: string;
+};
+
+type TypstCompilerInstance = {
+  addSource(path: string, source: string): void;
+  compile(options: { mainFilePath: string; format: unknown }): Promise<{
+    diagnostics?: CompilerDiagnostic[];
+    result?: Uint8Array;
+  }>;
+  init(options: { beforeBuild: unknown[]; getModule: () => string }): Promise<void>;
+  reset(): Promise<void>;
+};
 
 export function useTypstCompiler() {
   const [isCompiling, setIsCompiling] = useState(false);
   const [result, setResult] = useState<CompilationResult | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const compilerRef = useRef<any>(null);
+  const compilerRef = useRef<TypstCompilerInstance | null>(null);
   const prevUrlRef = useRef<string | null>(null);
 
   // Cleanup previous PDF URL
@@ -18,7 +31,7 @@ export function useTypstCompiler() {
     };
   }, []);
 
-  const compile = useCallback(async (content: string) => {
+  const compile = useCallback(async (filesOrContent: TypstFile[] | string, mainFilePath = 'main.typ') => {
     setIsCompiling(true);
     
     try {
@@ -35,18 +48,25 @@ export function useTypstCompiler() {
           getModule: () => compilerWasmUrl,
         });
       }
-      
-      // Add the main file content
-      compilerRef.current.addSource('/main.typ', content);
+
+      const files = typeof filesOrContent === 'string'
+        ? [{ path: mainFilePath, content: filesOrContent }]
+        : filesOrContent;
+
+      await compilerRef.current.reset();
+      for (const file of files) {
+        compilerRef.current.addSource(`/${file.path}`, file.content);
+      }
       
       // Compile to PDF
+      const { CompileFormatEnum } = await import('@myriaddreamin/typst.ts/compiler');
       const pdfResult = await compilerRef.current.compile({
-        mainFilePath: '/main.typ',
+        mainFilePath: `/${mainFilePath}`,
         format: CompileFormatEnum.pdf,
       });
       
       if (!pdfResult.result) {
-        throw new Error(pdfResult.diagnostics?.map((d: any) => d.message).join('\n') || 'Compilation failed');
+        throw new Error(pdfResult.diagnostics?.map((d) => d.message).join('\n') || 'Compilation failed');
       }
       
       // Cleanup previous URL

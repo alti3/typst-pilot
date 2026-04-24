@@ -25,11 +25,16 @@ export function EditorLayout() {
   
   const {
     files,
+    directories,
     activeFile,
     activeFileId,
     createFile,
+    createDirectory,
     deleteFile,
+    deleteDirectory,
     renameFile,
+    renameDirectory,
+    movePath,
     updateFileContent,
     setActiveFile,
   } = useFileStore();
@@ -64,7 +69,7 @@ export function EditorLayout() {
         clearTimeout(compileTimeoutRef.current);
       }
       compileTimeoutRef.current = setTimeout(() => {
-        compile(activeFile.content);
+        compile(files, activeFile.path);
       }, 1000);
     }
     
@@ -73,7 +78,7 @@ export function EditorLayout() {
         clearTimeout(compileTimeoutRef.current);
       }
     };
-  }, [activeFile?.content, compile]);
+  }, [activeFile?.content, activeFile?.path, compile, files]);
 
   const handleContentChange = useCallback((content: string) => {
     if (activeFileId) {
@@ -83,12 +88,12 @@ export function EditorLayout() {
 
   const handleCompile = useCallback(() => {
     if (activeFile?.content) {
-      compile(activeFile.content);
+      compile(files, activeFile.path);
     }
-  }, [activeFile?.content, compile]);
+  }, [activeFile?.content, activeFile?.path, compile, files]);
 
   return (
-    <div className="h-screen w-full flex flex-col overflow-hidden bg-background text-foreground">
+    <div className="h-dvh w-full flex flex-col overflow-hidden bg-background text-foreground">
       {/* Modern Header */}
       <header className="h-14 flex items-center justify-between px-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
         <div className="flex items-center gap-4">
@@ -107,6 +112,7 @@ export function EditorLayout() {
               size="icon"
               className="h-9 w-9 text-muted-foreground hover:text-foreground"
               onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label={sidebarOpen ? 'Close file explorer' : 'Open file explorer'}
             >
               {sidebarOpen ? (
                 <PanelLeftClose className="h-5 w-5" />
@@ -152,7 +158,7 @@ export function EditorLayout() {
             open={settingsOpen}
             onOpenChange={setSettingsOpen}
             trigger={
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Open settings">
                 <Settings className="h-5 w-5" />
               </Button>
             }
@@ -168,11 +174,16 @@ export function EditorLayout() {
               <ResizablePanel defaultSize={15} minSize={10} maxSize={25}>
                 <FileSidebar
                   files={files}
+                  directories={directories}
                   activeFileId={activeFileId}
                   onSelectFile={setActiveFile}
                   onCreateFile={createFile}
+                  onCreateDirectory={createDirectory}
                   onDeleteFile={deleteFile}
+                  onDeleteDirectory={deleteDirectory}
                   onRenameFile={renameFile}
+                  onRenameDirectory={renameDirectory}
+                  onMovePath={movePath}
                 />
               </ResizablePanel>
               <ResizableHandle withHandle />
