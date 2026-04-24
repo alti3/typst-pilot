@@ -36,6 +36,9 @@ export function EditorLayout() {
     renameDirectory,
     movePath,
     updateFileContent,
+    beginSuggestedEdit,
+    keepSuggestedEdit,
+    rejectSuggestedEdit,
     setActiveFile,
   } = useFileStore();
 
@@ -44,9 +47,9 @@ export function EditorLayout() {
   
   const handleApplyCode = useCallback((code: string) => {
     if (activeFileId) {
-      updateFileContent(activeFileId, code);
+      beginSuggestedEdit(activeFileId, code);
     }
-  }, [activeFileId, updateFileContent]);
+  }, [activeFileId, beginSuggestedEdit]);
 
   const {
     messages,
@@ -85,6 +88,18 @@ export function EditorLayout() {
       updateFileContent(activeFileId, content);
     }
   }, [activeFileId, updateFileContent]);
+
+  const handleKeepSuggestion = useCallback(() => {
+    if (activeFileId) {
+      keepSuggestedEdit(activeFileId);
+    }
+  }, [activeFileId, keepSuggestedEdit]);
+
+  const handleRejectSuggestion = useCallback(() => {
+    if (activeFileId) {
+      rejectSuggestedEdit(activeFileId);
+    }
+  }, [activeFileId, rejectSuggestedEdit]);
 
   const handleCompile = useCallback(() => {
     if (activeFile?.content) {
@@ -200,6 +215,9 @@ export function EditorLayout() {
                     <TypstEditor
                       content={activeFile.content}
                       onChange={handleContentChange}
+                      pendingSuggestion={activeFile.pendingSuggestion}
+                      onKeepSuggestion={handleKeepSuggestion}
+                      onRejectSuggestion={handleRejectSuggestion}
                     />
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
@@ -223,7 +241,6 @@ export function EditorLayout() {
                   error={chatError}
                   onSendMessage={sendMessage}
                   onClearMessages={clearMessages}
-                  onApplyCode={handleApplyCode}
                   isConfigured={isConfigured}
                   onOpenSettings={() => setSettingsOpen(true)}
                 />

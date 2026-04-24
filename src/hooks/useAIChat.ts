@@ -147,10 +147,10 @@ If the user asks you to edit or modify the document, provide the complete update
 
       setMessages(prev => [...prev, assistantMsg]);
 
-      // Check if there's Typst code to apply
-      const typstMatch = assistantContent.match(/```typst\n([\s\S]*?)```/);
+      // Full-document Typst responses enter review immediately.
+      const typstMatch = assistantContent.match(/```(?:typst)?\s*\n([\s\S]*?)```/);
       if (typstMatch && onApplyEdit) {
-        // Don't auto-apply, let user decide
+        onApplyEdit(typstMatch[1]);
       }
     } catch (err) {
       console.error('AI Chat error:', err);

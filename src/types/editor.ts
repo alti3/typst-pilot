@@ -3,6 +3,10 @@ export interface TypstFile {
   name: string;
   path: string;
   content: string;
+  pendingSuggestion?: {
+    originalContent: string;
+    suggestedAt: number;
+  };
   createdAt: number;
   updatedAt: number;
 }
@@ -76,7 +80,8 @@ export const LLM_PROVIDERS = {
   google: {
     name: 'Google',
     models: [
-      'gemini-3-pro-preview',
+      'gemini-3.1-pro-preview',
+      'gemini-3.1-flash-lite-preview',
       'gemini-3-flash-preview',
       'gemini-2.5-pro',
       'gemini-2.5-flash',
@@ -107,7 +112,8 @@ export const LLM_PROVIDERS = {
       'anthropic/claude-opus-4.5',
       'anthropic/claude-sonnet-4.5',
       'anthropic/claude-haiku-4.5',
-      'google/gemini-3-pro-preview',
+      'google/gemini-3.1-pro-preview',
+      'google/gemini-3.1-flash-lite-preview',
       'google/gemini-3-flash-preview',
       'google/gemini-2.5-pro',
       'google/gemini-2.5-flash',

@@ -23,7 +23,6 @@ interface AIChatPanelProps {
   error: string | null;
   onSendMessage: (message: string) => void;
   onClearMessages: () => void;
-  onApplyCode?: (code: string) => void;
   isConfigured: boolean;
   onOpenSettings: () => void;
 }
@@ -34,7 +33,6 @@ export function AIChatPanel({
   error,
   onSendMessage,
   onClearMessages,
-  onApplyCode,
   isConfigured,
   onOpenSettings,
 }: AIChatPanelProps) {
@@ -103,6 +101,7 @@ export function AIChatPanel({
             size="icon"
             className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
             title="Clear conversation"
+            aria-label="Clear conversation"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -155,28 +154,21 @@ export function AIChatPanel({
                     )}>
                       <div className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</div>
                       
-                      {typstCode && onApplyCode && (
+                      {typstCode && (
                         <div className="mt-3 flex items-center gap-1.5 pt-3 border-t border-border/20">
                           <Button
                             size="sm"
-                            variant={msg.role === 'user' ? "secondary" : "default"}
-                            onClick={() => onApplyCode(typstCode)}
-                            className="h-7 text-[11px] font-medium px-3 rounded-lg"
-                          >
-                            <Wand2 className="h-3 w-3 mr-1.5" />
-                            Apply Changes
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
+                            variant={msg.role === 'user' ? "secondary" : "ghost"}
                             onClick={() => copyToClipboard(typstCode, msg.id)}
-                            className="h-7 w-7 p-0 rounded-lg hover:bg-background/20"
+                            className="h-7 gap-1.5 rounded-lg px-2 text-[11px] font-medium hover:bg-background/20"
+                            aria-label="Copy Typst code"
                           >
                             {copiedId === msg.id ? (
                               <Check className="h-3.5 w-3.5" />
                             ) : (
                               <Copy className="h-3.5 w-3.5" />
                             )}
+                            Copy
                           </Button>
                         </div>
                       )}

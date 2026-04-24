@@ -141,9 +141,19 @@ function loadFromStorage(): FileStore {
   };
 }
 
+function serializeStoreForStorage(store: FileStore): FileStore {
+  return {
+    ...store,
+    files: store.files.map(({ pendingSuggestion, ...file }) => ({
+      ...file,
+      content: pendingSuggestion ? pendingSuggestion.originalContent : file.content,
+    })),
+  };
+}
+
 function saveToStorage(store: FileStore): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeStoreForStorage(store)));
   } catch (e) {
     console.error('Failed to save files to storage:', e);
   }
@@ -320,6 +330,50 @@ export function useFileStore() {
     }));
   }, []);
 
+  const beginSuggestedEdit = useCallback((id: string, content: string) => {
+    setStore(prev => ({
+      ...prev,
+      files: prev.files.map(f => {
+        if (f.id !== id) return f;
+
+        return {
+          ...f,
+          content,
+          pendingSuggestion: {
+            originalContent: f.pendingSuggestion?.originalContent ?? f.content,
+            suggestedAt: Date.now(),
+          },
+          updatedAt: Date.now(),
+        };
+      }),
+    }));
+  }, []);
+
+  const keepSuggestedEdit = useCallback((id: string) => {
+    setStore(prev => ({
+      ...prev,
+      files: prev.files.map(({ pendingSuggestion, ...file }) => 
+        file.id === id ? { ...file, updatedAt: Date.now() } : { ...file, pendingSuggestion }
+      ),
+    }));
+  }, []);
+
+  const rejectSuggestedEdit = useCallback((id: string) => {
+    setStore(prev => ({
+      ...prev,
+      files: prev.files.map(f => {
+        if (f.id !== id || !f.pendingSuggestion) return f;
+
+        const { pendingSuggestion, ...file } = f;
+        return {
+          ...file,
+          content: pendingSuggestion.originalContent,
+          updatedAt: Date.now(),
+        };
+      }),
+    }));
+  }, []);
+
   const setActiveFile = useCallback((id: string) => {
     setStore(prev => ({
       ...prev,
@@ -340,6 +394,9 @@ export function useFileStore() {
     renameDirectory,
     movePath,
     updateFileContent,
+    beginSuggestedEdit,
+    keepSuggestedEdit,
+    rejectSuggestedEdit,
     setActiveFile,
   };
 }
