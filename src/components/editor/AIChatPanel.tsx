@@ -43,7 +43,7 @@ export function AIChatPanel({
   // Scroll to bottom on new messages
   useEffect(() => {
     if (scrollRef.current) {
-      const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const scrollContainer = scrollRef.current.querySelector('[data-slot="scroll-area-viewport"]');
       if (scrollContainer) {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }

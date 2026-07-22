@@ -25,7 +25,7 @@ import { Separator } from '@/components/ui/separator';
 interface SettingsModalProps {
   settings: AISettings;
   onUpdateSettings: (updates: Partial<AISettings>) => void;
-  trigger?: React.ReactNode;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -132,7 +132,7 @@ export function SettingsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-2xl border-border shadow-2xl">
         <div className="bg-primary/5 p-6 pb-4">
           <DialogHeader>

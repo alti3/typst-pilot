@@ -1027,10 +1027,10 @@ export const PromptInputActionMenuTrigger = ({
   children,
   ...props
 }: PromptInputActionMenuTriggerProps) => (
-  <DropdownMenuTrigger asChild>
-    <PromptInputButton className={className} {...props}>
-      {children ?? <PlusIcon className="size-4" />}
-    </PromptInputButton>
+  <DropdownMenuTrigger
+    render={<PromptInputButton className={className} {...props} />}
+  >
+    {children ?? <PlusIcon className="size-4" />}
   </DropdownMenuTrigger>
 );
 
@@ -1084,7 +1084,7 @@ export const PromptInputSubmit = ({
     Icon = <XIcon className="size-4" />;
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick: NonNullable<PromptInputSubmitProps["onClick"]> = (e) => {
     if (isGenerating && onStop) {
       e.preventDefault();
       onStop();
@@ -1161,23 +1161,48 @@ export const PromptInputSelectValue = ({
   <SelectValue className={cn(className)} {...props} />
 );
 
-export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard>;
+type PromptInputHoverCardTiming = {
+  openDelay: number;
+  closeDelay: number;
+};
+
+const PromptInputHoverCardContext = createContext<PromptInputHoverCardTiming>({
+  openDelay: 0,
+  closeDelay: 0,
+});
+
+export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard> &
+  Partial<PromptInputHoverCardTiming>;
 
 export const PromptInputHoverCard = ({
   openDelay = 0,
   closeDelay = 0,
   ...props
 }: PromptInputHoverCardProps) => (
-  <HoverCard closeDelay={closeDelay} openDelay={openDelay} {...props} />
+  <PromptInputHoverCardContext.Provider value={{ openDelay, closeDelay }}>
+    <HoverCard {...props} />
+  </PromptInputHoverCardContext.Provider>
 );
 
 export type PromptInputHoverCardTriggerProps = ComponentProps<
   typeof HoverCardTrigger
 >;
 
-export const PromptInputHoverCardTrigger = (
-  props: PromptInputHoverCardTriggerProps
-) => <HoverCardTrigger {...props} />;
+export const PromptInputHoverCardTrigger = ({
+  delay,
+  closeDelay,
+  ...props
+}: PromptInputHoverCardTriggerProps) => {
+  const timing = useContext(PromptInputHoverCardContext);
+
+  return (
+    <HoverCardTrigger
+      delay={delay ?? timing.openDelay}
+      closeDelay={closeDelay ?? timing.closeDelay}
+      {...props}
+    />
+  );
+};
 
 export type PromptInputHoverCardContentProps = ComponentProps<
   typeof HoverCardContent

@@ -1,25 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { CompilationResult, TypstFile } from '@/types/editor';
-
-type CompilerDiagnostic = {
-  message?: string;
-};
-
-type TypstCompilerInstance = {
-  addSource(path: string, source: string): void;
-  compile(options: { mainFilePath: string; format: unknown }): Promise<{
-    diagnostics?: CompilerDiagnostic[];
-    result?: Uint8Array;
-  }>;
-  init(options: { beforeBuild: unknown[]; getModule: () => string }): Promise<void>;
-  reset(): Promise<void>;
-};
+import type { TypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 
 export function useTypstCompiler() {
   const [isCompiling, setIsCompiling] = useState(false);
   const [result, setResult] = useState<CompilationResult | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const compilerRef = useRef<TypstCompilerInstance | null>(null);
+  const compilerRef = useRef<TypstCompiler | null>(null);
   const prevUrlRef = useRef<string | null>(null);
 
   // Cleanup previous PDF URL
@@ -66,7 +53,13 @@ export function useTypstCompiler() {
       });
       
       if (!pdfResult.result) {
-        throw new Error(pdfResult.diagnostics?.map((d) => d.message).join('\n') || 'Compilation failed');
+        throw new Error(
+          pdfResult.diagnostics
+            ?.map((diagnostic) =>
+              typeof diagnostic === 'string' ? diagnostic : diagnostic.message,
+            )
+            .join('\n') || 'Compilation failed',
+        );
       }
       
       // Cleanup previous URL
@@ -75,7 +68,7 @@ export function useTypstCompiler() {
       }
       
       // Create blob URL for PDF
-      const blob = new Blob([pdfResult.result], { type: 'application/pdf' });
+      const blob = new Blob([Uint8Array.from(pdfResult.result)], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       prevUrlRef.current = url;
       
